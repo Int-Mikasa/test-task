@@ -74,6 +74,7 @@ function App(props) {
                                                                    name={props.name}
                                                                    onPageChanged={props.onPageChanged}
                                                                    pageSize={props.pageSize}
+                                                                   lastPage={props.lastPage}
                                                                    id={props.id}/>}/>
                 <Route path='/register' render={() => <Register shouldRedirect={props.shouldRedirect} onSubmit={onSubmitRegister}/>}/>
             </div>
@@ -92,7 +93,8 @@ let mapStateToProps = (state) => {
         totalUsersCount: state.post.totalUsersCount,
         currentPage: state.post.currentPage,
         pageSize: state.post.pageSize,
-        shouldRedirect: state.auth.shouldRedirect
+        shouldRedirect: state.auth.shouldRedirect,
+        lastPage: state.post.lastPage
     }
 }
 

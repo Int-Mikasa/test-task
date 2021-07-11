@@ -5,11 +5,13 @@ const ADD_POST = "ADD_POST"
 const ADD_POST_BY_ID = "ADD_POST_BY_ID"
 const TOTAL_USERS_COUNT = "TOTAL_USERS_COUNT"
 const SET_CURRENT_PAGE = "SET_CURRENT_PAGE"
+const LAST_PAGE = "LAST_PAGE"
 
 let initialState = {
     posts: [],
     pageSize: 1,
     totalUsersCount: 0,
+    lastPage: 0,
     currentPage: 1,
 }
 
@@ -33,7 +35,12 @@ const postReducer = (state = initialState, action) => {
         case SET_CURRENT_PAGE: {
             return  {
                 ...state,
-                currentPage : action.currentPage }
+                lastPage : action.lastPage }
+        }
+        case LAST_PAGE: {
+            return  {
+                ...state,
+                lastPage : action.lastPage }
         }
 
         default:
@@ -45,6 +52,13 @@ export const setPosts = (posts) => {
     return {
         type: ADD_POST,
         payload: posts
+    }
+}
+
+export const setLastPage = (lastPage) => {
+    return {
+        type: LAST_PAGE,
+        lastPage
     }
 }
 
@@ -96,6 +110,7 @@ export const postsThunk = (currentPage = initialState.currentPage, pageSize = in
             .then(response => {
                 dispatch(setTotalUsersCount(response.data.data.length))
                 dispatch(setPosts(response.data.data))
+                dispatch(setLastPage(response.data.meta.last_page))
             })
             .finally(() => {
                 dispatch(loaderState(false))
@@ -109,6 +124,7 @@ export const onPageChanged = (currentPage, pageSize = initialState.pageSize) => 
         postsAPI.getPost(currentPage, pageSize)
             .then(response => {
                 dispatch(setTotalUsersCount(response.data.data.length))
+                dispatch(setLastPage(response.data.meta.last_page))
                 dispatch(setPosts(response.data.data))
             })
     }

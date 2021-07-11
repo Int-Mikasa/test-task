@@ -29,7 +29,7 @@ const Posts = (props) => {
         props.postsThunks()
     }, [])
 
-    let pagesCount = Math.ceil(5 / props.pageSize)
+    let pagesCount = props.lastPage
     let pages = []
     for (let i = 1; i <= pagesCount; i++) {
         pages.push(i)
@@ -57,7 +57,7 @@ const Posts = (props) => {
                         <input type="number" onChange={(e) => setTextId(e.target.value)} className="input100" value={textId} placeholder='Search'/>
                         <button onClick={() => getPostsById(textId)} className='btn-add'>Search id</button>
                         <button onClick={() => props.postsThunks()} className='btn-all'>Search all</button>
-                        <div className='posts-container'>
+                        <div className=''>
                             {props.posts.map(p => <Post updatePost={props.updatePost} deletePost={deletePost} id={p.id} key={p.id} title={p.title} price={p.price} isAvaliable={p.is_available}/>)}
                         </div>
                         <div className="user-pages">
