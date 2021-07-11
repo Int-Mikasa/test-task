@@ -30,6 +30,9 @@ const Posts = (props) => {
     }, [])
 
     let pagesCount = props.lastPage
+    if(props.posts == false) {
+        pagesCount = 0
+    }
     let pages = []
     for (let i = 1; i <= pagesCount; i++) {
         pages.push(i)

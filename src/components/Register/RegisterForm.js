@@ -9,7 +9,7 @@ import {reduxForm, Field} from "redux-form";
 const RegisterForm = (props) => {
     console.log(props.shouldRedirect)
     if(props.shouldRedirect) {
-        return <Redirect to='/login'/>
+        return <Redirect to='/posts'/>
     }
 
     return (

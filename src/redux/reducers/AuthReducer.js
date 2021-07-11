@@ -57,19 +57,26 @@ export const shouldRedirect = (boolen) => {
 
 export const registerThunk = (formData) => {
     let {email, name, password} = formData
-        return (dispatch) => {
-            dispatch(loaderState(true))
-            return authAPI.register(email, name, password)
-                .then(response => {
-                    dispatch(shouldRedirect(true))
-                })
-                .finally(response => {
-                    dispatch(loaderState(false))
-                })
-        }
+    return (dispatch) => {
+        dispatch(loaderState(true))
+        return authAPI.register(email, name, password)
+            .then(response => {
+                localStorage.setItem('token', response.data.token)
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        dispatch(loaderState(true))
+                        dispatch(authThunk(localStorage.getItem('token')))
+                        resolve()
+                    }, 2000)
+                }).then(() => dispatch(loaderState(false)))
+            })
+            .finally(response => {
+                dispatch(loaderState(false))
+            })
+    }
 }
 
-export const setAuth = (id, name,email, isAuth, token) => {
+export const setAuth = (id, name, email, isAuth, token) => {
     return {
         type: SET_AUTH,
         payload: {
@@ -84,17 +91,19 @@ export const setAuth = (id, name,email, isAuth, token) => {
 export const logoutThunk = (token) => {
     return (dispatch) => {
         localStorage.removeItem('token')
-        dispatch(setAuth(null,null,null,false))
+        dispatch(setAuth(null, null, null, false))
+        dispatch(shouldRedirect(false))
     }
 }
 
 export const authThunk = (token) => {
     return (dispatch) => {
         dispatch(loaderState(true))
-        return  authAPI.checkAuth(token)
+        return authAPI.checkAuth(token)
             .then(response => {
-                    let {id, name, email} = response.data
-                    dispatch(setAuth(id, name, email, true, token))
+                let {id, name, email} = response.data
+                dispatch(setAuth(id, name, email, true, token))
+                dispatch(shouldRedirect(true))
             })
             .finally(() => {
                 dispatch(loaderState(false))
@@ -109,13 +118,13 @@ export const loginThunk = (formData) => {
         authAPI.login(email, password)
             .then(response => {
                 localStorage.setItem('token', response.data.token)
-               return new Promise(resolve => {
-                   setTimeout(() => {
-                       dispatch(loaderState(true))
-                       dispatch(authThunk(response.data.token))
-                       resolve()
-                   }, 2000)
-               }).then(() => dispatch(loaderState(false)))
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        dispatch(loaderState(true))
+                        dispatch(authThunk(response.data.token))
+                        resolve()
+                    }, 2000)
+                }).then(() => dispatch(loaderState(false)))
             })
             .finally(response => {
                 dispatch(loaderState(false))
